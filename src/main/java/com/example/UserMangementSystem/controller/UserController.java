@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.ui.Model; // Add this import
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.ui.Model;
 
 @Controller
 public class UserController {
@@ -16,7 +17,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        model.addAttribute("users", userService.getAllUsers());
         return "index";
     }
 
@@ -28,9 +30,27 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerUser(User user) {
-
         userService.saveUser(user);
+        return "redirect:/";
+    }
 
+    @GetMapping("/edit/{id}")
+    public String showEditPage(@PathVariable("id") Long id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateUser(@PathVariable("id") Long id, User user) {
+        user.setId(id);
+        userService.saveUser(user);
+        return "redirect:/";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
         return "redirect:/";
     }
 }
