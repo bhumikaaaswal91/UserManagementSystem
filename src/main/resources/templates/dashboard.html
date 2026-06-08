@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Dashboard</title>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+
+<h2>User Verification Dashboard</h2>
+
+<div id="container"
+     style="width:800px;height:500px;">
+</div>
+
+<script th:inline="javascript">
+
+    let verified = [[${verifiedUsers}]];
+    let unverified = [[${unverifiedUsers}]];
+
+    Highcharts.chart('container', {
+
+        chart: {
+            type: 'column'
+        },
+
+        title: {
+            text: 'Verified vs Unverified Users'
+        },
+
+        xAxis: {
+            categories: ['Verified', 'Unverified']
+        },
+
+        yAxis: {
+            title: {
+                text: 'Number of Users'
+            }
+        },
+
+        series: [{
+            name: 'Users',
+            data: [verified, unverified]
+        }]
+    });
+
+</script>
+
+</body>
+</html>

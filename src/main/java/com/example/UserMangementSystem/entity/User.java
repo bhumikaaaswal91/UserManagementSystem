@@ -1,13 +1,11 @@
 package com.example.UserMangementSystem.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -16,11 +14,20 @@ public class User {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
 
-    private boolean verified;
+    private boolean verified = false;
+
+    // Spring Security role
+    private String role = "USER";
+
+    // OTP fields
+    private String otp;
+
+    private LocalDateTime otpGeneratedTime;
 
     public User() {
     }
@@ -63,5 +70,29 @@ public class User {
 
     public void setVerified(boolean verified) {
         this.verified = verified;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpGeneratedTime() {
+        return otpGeneratedTime;
+    }
+
+    public void setOtpGeneratedTime(LocalDateTime otpGeneratedTime) {
+        this.otpGeneratedTime = otpGeneratedTime;
     }
 }

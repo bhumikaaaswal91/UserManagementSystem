@@ -9,18 +9,32 @@
 <body>
 
     <div class="container">
+
         <div class="actions-header">
             <div>
                 <h1>User Directory</h1>
-                <p class="subtitle">Manage system users, view registration status, update details, or delete accounts.</p>
+                <p class="subtitle">
+                    Manage system users, view registration status, update details, or delete accounts.
+                </p>
             </div>
-            <a th:href="@{/register}" class="btn btn-primary">Add User</a>
+
+            <div class="actions-cell">
+                <a th:href="@{/dashboard}" class="btn btn-secondary">
+                    Dashboard
+                </a>
+
+                <a th:href="@{/register}" class="btn btn-primary">
+                    Add User
+                </a>
+            </div>
         </div>
 
         <!-- Check if users list is empty -->
         <div th:if="${#lists.isEmpty(users)}" class="empty-state">
             <p>No users found in the system. Start by creating a new account.</p>
-            <a th:href="@{/register}" class="btn btn-primary">Create First User</a>
+            <a th:href="@{/register}" class="btn btn-primary">
+                Create First User
+            </a>
         </div>
 
         <!-- Display users table if not empty -->
@@ -35,29 +49,55 @@
                         <th style="width: 180px; text-align: center;">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr th:each="user : ${users}">
                         <td class="user-id" th:text="${user.id}">1</td>
+
                         <td>
-                            <div class="user-name" th:text="${user.name}">John Doe</div>
-                        </td>
-                        <td th:text="${user.email}">john@example.com</td>
-                        <td>
-                            <span th:if="${user.verified}" class="badge badge-success">Verified</span>
-                            <span th:if="${!user.verified}" class="badge badge-warning">Pending</span>
-                        </td>
-                        <td>
-                            <div class="actions-cell">
-                                <a th:href="@{/edit/{id}(id=${user.id})}" class="btn btn-secondary btn-sm">Edit</a>
-                                <a th:href="@{/delete/{id}(id=${user.id})}" 
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                            <div class="user-name" th:text="${user.name}">
+                                John Doe
                             </div>
                         </td>
+
+                        <td th:text="${user.email}">
+                            john@example.com
+                        </td>
+
+                        <td>
+                            <span th:if="${user.verified}"
+                                  class="badge badge-success">
+                                Verified
+                            </span>
+
+                            <span th:if="${!user.verified}"
+                                  class="badge badge-warning">
+                                Pending
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="actions-cell">
+
+                                <a th:href="@{/edit/{id}(id=${user.id})}"
+                                   class="btn btn-secondary btn-sm">
+                                    Edit
+                                </a>
+
+                                <a th:href="@{/delete/{id}(id=${user.id})}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Are you sure you want to delete this user?');">
+                                    Delete
+                                </a>
+
+                            </div>
+                        </td>
+
                     </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
 
 </body>

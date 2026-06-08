@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - User Management System</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Verify Your Account</h1>
+
+        <p class="subtitle">
+            An OTP has been sent to your registered email address.
+            Enter the verification code below to activate your account.
+        </p>
+
+        <!-- Error Message -->
+        <div th:if="${error}" class="error-message">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${message}" class="success-message">
+            <span th:text="${message}"></span>
+        </div>
+
+        <form th:action="@{/verify}" method="post">
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    th:value="${email}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="otp">OTP Code</label>
+
+                <input
+                    type="text"
+                    id="otp"
+                    name="otp"
+                    placeholder="Enter 6-digit OTP"
+                    maxlength="6"
+                    required>
+            </div>
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+                    Verify Account
+                </button>
+
+                <a
+                    th:href="@{/register}"
+                    class="btn btn-secondary">
+                    Back
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

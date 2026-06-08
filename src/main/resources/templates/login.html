@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - User Management System</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Welcome Back</h1>
+
+        <p class="subtitle">
+            Sign in using your email and password to access the User Management System.
+        </p>
+
+        <!-- Login Error -->
+        <div th:if="${param.error}" class="error-message">
+            Invalid email or password.
+        </div>
+
+        <!-- Logout Success -->
+        <div th:if="${param.logout}" class="success-message">
+            You have been logged out successfully.
+        </div>
+
+        <!-- Account Verified -->
+        <div th:if="${param.verified}" class="success-message">
+            Your account has been verified successfully. Please log in.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="form-group">
+                <label for="username">Email Address</label>
+
+                <input
+                    type="email"
+                    id="username"
+                    name="username"
+                    placeholder="username@example.com"
+                    required
+                    autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password">
+            </div>
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+                    Login
+                </button>
+
+                <a
+                    th:href="@{/register}"
+                    class="btn btn-secondary">
+                    Register
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+</html>
