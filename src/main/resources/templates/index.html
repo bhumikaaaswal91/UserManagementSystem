@@ -46,7 +46,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th style="width: 130px;">Status</th>
-                        <th style="width: 180px; text-align: center;">Actions</th>
+                        <th style="width: 260px; text-align: center;">Actions</th>
                     </tr>
                 </thead>
 
@@ -82,6 +82,11 @@
                                 <a th:href="@{/edit/{id}(id=${user.id})}"
                                    class="btn btn-secondary btn-sm">
                                     Edit
+                                </a>
+
+                                <a th:href="@{/change-password/{id}(id=${user.id})}"
+                                   class="btn btn-secondary btn-sm btn-password">
+                                    Password
                                 </a>
 
                                 <a th:href="@{/delete/{id}(id=${user.id})}"

@@ -8,27 +8,49 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container container-sm">
         <h1>Update User Details</h1>
         <p class="subtitle">Modify the fields below to update the user account information.</p>
 
-        <form th:action="@{/edit/{id}(id=${user.id})}" th:object="${user}" method="post">
+        <form th:action="@{/edit/{id}(id=${user.id})}" th:object="${user}" method="post" id="edit-form" novalidate>
             <!-- Hidden field to bind User ID -->
             <input type="hidden" th:field="*{id}">
 
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" id="name" th:field="*{name}" placeholder="Enter full name" required autocomplete="name">
+                <input type="text" id="name" th:field="*{name}" placeholder="Enter full name" autocomplete="name">
+                <span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                <span class="field-error" id="name-error"></span>
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" th:field="*{email}" placeholder="username@example.com" required autocomplete="email">
+                <input type="email" id="email" th:field="*{email}" placeholder="username@example.com" autocomplete="email">
+                <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                <span class="field-error" id="email-error"></span>
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" th:field="*{password}" placeholder="Update password" required autocomplete="new-password">
+                <label for="password">Password <span class="label-hint">(leave blank to keep current)</span></label>
+                <input type="password" id="password" th:field="*{password}" placeholder="Enter new password or leave blank" autocomplete="new-password">
+                <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                <span class="field-error" id="password-error"></span>
+
+                <!-- Password strength indicator (shown only when typing) -->
+                <div class="password-strength" id="password-strength" style="display: none;">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strength-fill"></div>
+                    </div>
+                    <span class="strength-label" id="strength-label"></span>
+                </div>
+
+                <ul class="password-requirements" id="password-requirements" style="display: none;">
+                    <li id="req-length"><span class="req-icon">&#10007;</span> At least 8 characters</li>
+                    <li id="req-upper"><span class="req-icon">&#10007;</span> One uppercase letter</li>
+                    <li id="req-lower"><span class="req-icon">&#10007;</span> One lowercase letter</li>
+                    <li id="req-digit"><span class="req-icon">&#10007;</span> One digit</li>
+                    <li id="req-special"><span class="req-icon">&#10007;</span> One special character (@$!%*?&#+\-_)</li>
+                </ul>
             </div>
 
             <div class="form-group checkbox-group">
@@ -42,6 +64,161 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('edit-form');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const nameError = document.getElementById('name-error');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+            const strengthFill = document.getElementById('strength-fill');
+            const strengthLabel = document.getElementById('strength-label');
+            const strengthContainer = document.getElementById('password-strength');
+            const requirementsList = document.getElementById('password-requirements');
+
+            const requirements = {
+                length: document.getElementById('req-length'),
+                upper: document.getElementById('req-upper'),
+                lower: document.getElementById('req-lower'),
+                digit: document.getElementById('req-digit'),
+                special: document.getElementById('req-special')
+            };
+
+            function checkRequirements(pwd) {
+                const checks = {
+                    length: pwd.length >= 8,
+                    upper: /[A-Z]/.test(pwd),
+                    lower: /[a-z]/.test(pwd),
+                    digit: /\d/.test(pwd),
+                    special: /[@$!%*?&#+\-_]/.test(pwd)
+                };
+
+                let passed = 0;
+                for (const [key, met] of Object.entries(checks)) {
+                    const li = requirements[key];
+                    const icon = li.querySelector('.req-icon');
+                    if (met) {
+                        li.classList.add('met');
+                        li.classList.remove('unmet');
+                        icon.innerHTML = '&#10003;';
+                        passed++;
+                    } else {
+                        li.classList.add('unmet');
+                        li.classList.remove('met');
+                        icon.innerHTML = '&#10007;';
+                    }
+                }
+
+                const percent = (passed / 5) * 100;
+                strengthFill.style.width = percent + '%';
+                if (passed <= 1) {
+                    strengthFill.className = 'strength-fill strength-weak';
+                    strengthLabel.textContent = passed === 0 ? '' : 'Weak';
+                } else if (passed <= 3) {
+                    strengthFill.className = 'strength-fill strength-fair';
+                    strengthLabel.textContent = 'Fair';
+                } else if (passed === 4) {
+                    strengthFill.className = 'strength-fill strength-good';
+                    strengthLabel.textContent = 'Good';
+                } else {
+                    strengthFill.className = 'strength-fill strength-strong';
+                    strengthLabel.textContent = 'Strong';
+                }
+
+                return passed === 5;
+            }
+
+            function validateName() {
+                const name = nameInput.value.trim();
+                if (!name) {
+                    showError(nameInput, nameError, 'Name is required');
+                    return false;
+                }
+                if (name.length < 2 || name.length > 50) {
+                    showError(nameInput, nameError, 'Name must be between 2 and 50 characters');
+                    return false;
+                }
+                clearError(nameInput, nameError);
+                return true;
+            }
+
+            function validateEmail() {
+                const email = emailInput.value.trim();
+                if (!email) {
+                    showError(emailInput, emailError, 'Email is required');
+                    return false;
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showError(emailInput, emailError, 'Please enter a valid email address');
+                    return false;
+                }
+                clearError(emailInput, emailError);
+                return true;
+            }
+
+            function validatePassword() {
+                const pwd = passwordInput.value;
+                // Password is optional on edit
+                if (!pwd) {
+                    clearError(passwordInput, passwordError);
+                    return true;
+                }
+                const allMet = checkRequirements(pwd);
+                if (!allMet) {
+                    showError(passwordInput, passwordError, 'Password does not meet all requirements');
+                    return false;
+                }
+                clearError(passwordInput, passwordError);
+                return true;
+            }
+
+            nameInput.addEventListener('input', function() {
+                if (nameInput.value.trim()) clearError(nameInput, nameError);
+            });
+            nameInput.addEventListener('blur', validateName);
+
+            emailInput.addEventListener('input', function() {
+                if (emailInput.value.trim()) clearError(emailInput, emailError);
+            });
+            emailInput.addEventListener('blur', validateEmail);
+
+            passwordInput.addEventListener('input', function() {
+                const pwd = passwordInput.value;
+                if (pwd) {
+                    strengthContainer.style.display = '';
+                    requirementsList.style.display = '';
+                    checkRequirements(pwd);
+                    clearError(passwordInput, passwordError);
+                } else {
+                    strengthContainer.style.display = 'none';
+                    requirementsList.style.display = 'none';
+                    clearError(passwordInput, passwordError);
+                }
+            });
+            passwordInput.addEventListener('blur', validatePassword);
+
+            form.addEventListener('submit', function(e) {
+                const v1 = validateName();
+                const v2 = validateEmail();
+                const v3 = validatePassword();
+                if (!v1 || !v2 || !v3) e.preventDefault();
+            });
+
+            function showError(input, errorSpan, msg) {
+                input.classList.add('is-invalid');
+                errorSpan.textContent = msg;
+            }
+
+            function clearError(input, errorSpan) {
+                input.classList.remove('is-invalid');
+                errorSpan.textContent = '';
+            }
+        });
+    </script>
 
 </body>
 </html>

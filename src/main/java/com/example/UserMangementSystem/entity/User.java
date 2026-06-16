@@ -3,6 +3,9 @@ package com.example.UserMangementSystem.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -12,11 +15,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;
 
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please enter a valid email address")
     @Column(unique = true, nullable = false)
     private String email;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
     private String password;
 
     private boolean verified = false;
@@ -28,6 +37,11 @@ public class User {
     private String otp;
 
     private LocalDateTime otpGeneratedTime;
+
+    // Password reset fields
+    private String resetToken;
+
+    private LocalDateTime resetTokenExpiry;
 
     public User() {
     }
@@ -94,5 +108,21 @@ public class User {
 
     public void setOtpGeneratedTime(LocalDateTime otpGeneratedTime) {
         this.otpGeneratedTime = otpGeneratedTime;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public LocalDateTime getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
     }
 }

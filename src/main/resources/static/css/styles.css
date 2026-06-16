@@ -11,6 +11,7 @@
     --success-glow: rgba(16, 185, 129, 0.3);
     --danger: #ef4444;
     --danger-hover: #dc2626;
+    --warning: #f59e0b;
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
@@ -56,6 +57,10 @@ body {
     animation: fadeIn 0.6s ease-out;
 }
 
+.container-sm {
+    max-width: 560px;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -88,6 +93,7 @@ p.subtitle {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    gap: 1rem;
 }
 
 /* Buttons */
@@ -103,6 +109,7 @@ p.subtitle {
     cursor: pointer;
     text-decoration: none;
     transition: var(--transition);
+    font-family: inherit;
 }
 
 .btn-primary {
@@ -145,6 +152,16 @@ p.subtitle {
     padding: 0.45rem 0.9rem;
     font-size: 0.85rem;
     border-radius: 8px;
+}
+
+.btn-password {
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+}
+
+.btn-password:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.5);
 }
 
 /* Tables */
@@ -246,6 +263,13 @@ label {
     color: var(--text-secondary);
 }
 
+.label-hint {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -266,6 +290,13 @@ input[type="password"]:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-glow);
     background: rgba(15, 23, 42, 0.8);
+}
+
+/* Invalid input state */
+input.is-invalid,
+input.is-invalid:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
 }
 
 .checkbox-group {
@@ -329,23 +360,218 @@ input[type="checkbox"]:focus {
     margin-bottom: 1.5rem;
 }
 
-/* OTP Messages */
+/* ── Messages ───────────────────────────────────────────── */
 
 .error-message {
-background: rgba(239, 68, 68, 0.15);
-border: 1px solid rgba(239, 68, 68, 0.25);
-color: #f87171;
-padding: 1rem;
-border-radius: 10px;
-margin-bottom: 1.5rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #f87171;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    animation: fadeIn 0.4s ease-out;
 }
 
 .success-message {
-background: rgba(16, 185, 129, 0.15);
-border: 1px solid rgba(16, 185, 129, 0.25);
-color: #34d399;
-padding: 1rem;
-border-radius: 10px;
-margin-bottom: 1.5rem;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #34d399;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    animation: fadeIn 0.4s ease-out;
 }
 
+/* ── Field Validation Errors ────────────────────────────── */
+
+.field-error {
+    font-size: 0.82rem;
+    color: var(--danger);
+    min-height: 0;
+    line-height: 1.4;
+    animation: errorSlideIn 0.25s ease-out;
+}
+
+.field-error:empty {
+    display: none;
+}
+
+@keyframes errorSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Forgot Password Link ───────────────────────────────── */
+
+.forgot-password-link {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.forgot-password-link a {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.forgot-password-link a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+/* ── Reset Link Box ─────────────────────────────────────── */
+
+.reset-link-box {
+    margin-bottom: 1rem;
+}
+
+.reset-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    color: var(--success);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+    word-break: break-all;
+}
+
+.reset-link:hover {
+    background: rgba(16, 185, 129, 0.25);
+    transform: translateY(-1px);
+}
+
+/* ── Password Strength Meter ────────────────────────────── */
+
+.password-strength {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.strength-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 3px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+
+.strength-weak {
+    background: linear-gradient(90deg, var(--danger), #f87171);
+}
+
+.strength-fair {
+    background: linear-gradient(90deg, var(--warning), #fbbf24);
+}
+
+.strength-good {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.strength-strong {
+    background: linear-gradient(90deg, var(--success), #34d399);
+}
+
+.strength-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 50px;
+    color: var(--text-secondary);
+}
+
+/* ── Password Requirements Checklist ────────────────────── */
+
+.password-requirements {
+    list-style: none;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.password-requirements li {
+    font-size: 0.82rem;
+    padding: 0.25rem 0;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.password-requirements li.met {
+    color: var(--success);
+}
+
+.password-requirements li.unmet {
+    color: var(--text-muted);
+}
+
+.req-icon {
+    font-size: 0.78rem;
+    font-weight: 700;
+    width: 1rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+li.met .req-icon {
+    color: var(--success);
+}
+
+li.unmet .req-icon {
+    color: rgba(239, 68, 68, 0.6);
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    .actions-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .actions-cell {
+        flex-wrap: wrap;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
