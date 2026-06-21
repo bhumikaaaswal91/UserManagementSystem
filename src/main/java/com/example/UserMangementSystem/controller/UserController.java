@@ -241,12 +241,15 @@ public class UserController {
 
         if (!userService.isValidResetToken(token)) {
             model.addAttribute("invalidToken", true);
+            model.addAttribute("resetSuccess", false);
             return "reset-password";
         }
 
         ResetPasswordDto dto = new ResetPasswordDto();
         dto.setToken(token);
         model.addAttribute("resetPasswordDto", dto);
+        model.addAttribute("invalidToken", false);
+        model.addAttribute("resetSuccess", false);
         return "reset-password";
     }
 
@@ -263,16 +266,20 @@ public class UserController {
 
         if (result.hasErrors()) {
             model.addAttribute("resetPasswordDto", dto);
+            model.addAttribute("invalidToken", false);
+            model.addAttribute("resetSuccess", false);
             return "reset-password";
         }
 
         boolean success = userService.resetPassword(dto.getToken(), dto.getNewPassword());
         if (!success) {
             model.addAttribute("invalidToken", true);
+            model.addAttribute("resetSuccess", false);
             return "reset-password";
         }
 
         model.addAttribute("resetSuccess", true);
+        model.addAttribute("invalidToken", false);
         return "reset-password";
     }
 

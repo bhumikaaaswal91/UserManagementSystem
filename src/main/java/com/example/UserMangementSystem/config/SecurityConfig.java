@@ -38,6 +38,7 @@ public class SecurityConfig {
                             "/verify",
                             "/forgot-password",
                             "/reset-password",
+                            "/error",
                             "/css/**")
                     .permitAll()
 
