@@ -116,66 +116,89 @@ public class UserController {
         return "verifyOtp";
     }
 
+    
+
     // ── Edit User ────────────────────────────────────────────
 
     @GetMapping("/edit/{id}")
-    public String showEditPage(
-            @PathVariable("id") Long id,
-            Model model) {
+    public String showEditPage(@PathVariable("id") Long id,Model model) {
+        User existingUser = userService.getUserById(id);
 
-        User user = userService.getUserById(id);
-        // Clear password so form shows empty (user can leave blank to keep existing)
-        user.setPassword("");
-        model.addAttribute("user", user);
+        User formUser = new User();
+        formUser.setId(existingUser.getId());
+        formUser.setName(existingUser.getName());
+        formUser.setEmail(existingUser.getEmail());
+        formUser.setVerified(existingUser.isVerified());
+            
+        // Leave password empty in form
+        formUser.setPassword("");
+
+        model.addAttribute("user", formUser);
 
         return "edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateUser(
-            @PathVariable("id") Long id,
-            @Valid User user,
-            BindingResult result,
-            Model model) {
-
+    public String updateUser(@PathVariable("id") Long id,User user,BindingResult result,Model model) {
         User existingUser = userService.getUserById(id);
 
-        // Check for duplicate email (exclude current user)
+        // Check duplicate email
         if (user.getEmail() != null && userService.emailExistsForOtherUser(user.getEmail(), id)) {
-            result.rejectValue("email", "duplicate", "This email is already registered to another user");
+            
+            result.rejectValue(
+                "email",
+                "duplicate",
+                "This email is already registered to another user");
         }
 
-        // If password is blank, keep existing hashed password
-        boolean passwordChanged = user.getPassword() != null && !user.getPassword().isBlank();
-
-        if (!passwordChanged) {
-            // Filter out password-related errors since it's optional on edit
-            boolean hasNonPasswordErrors = result.getFieldErrors().stream()
-                    .anyMatch(e -> !"password".equals(e.getField()));
-            if (hasNonPasswordErrors) {
-                return "edit";
-            }
-            user.setPassword(existingUser.getPassword());
-        } else {
-            if (result.hasErrors()) {
-                return "edit";
-            }
-            // Hash the new password
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Manual validation for name
+        if (user.getName() == null || user.getName().trim().length() < 2 || user.getName().trim().length() > 50) {
+            
+            result.rejectValue(
+                "name",
+                "invalid",
+                "Name must be between 2 and 50 characters");
         }
 
-        user.setId(id);
-        // Preserve fields not in the edit form
-        user.setRole(existingUser.getRole());
-        user.setOtp(existingUser.getOtp());
-        user.setOtpGeneratedTime(existingUser.getOtpGeneratedTime());
-        user.setResetToken(existingUser.getResetToken());
-        user.setResetTokenExpiry(existingUser.getResetTokenExpiry());
+        // Manual validation for email
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
 
-        userService.saveUser(user);
+            result.rejectValue(
+                "email",
+                "required",
+                "Email is required");
+        }
+
+        if (result.hasErrors()) {
+            return "edit";
+        }
+
+        // Update editable fields
+        existingUser.setName(user.getName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setVerified(user.isVerified());
+        
+        // Update password only if provided
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            
+            if (user.getPassword().length() < 8 || user.getPassword().length() > 64) {
+                
+                result.rejectValue(
+                    "password",
+                    "invalid",
+                    "Password must be between 8 and 64 characters");
+
+                return "edit";
+            }
+
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
+        userService.saveUser(existingUser);
 
         return "redirect:/";
     }
+
 
     // ── Delete User ──────────────────────────────────────────
 

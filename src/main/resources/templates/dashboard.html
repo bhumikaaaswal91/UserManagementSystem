@@ -13,6 +13,22 @@
      style="width:800px;height:500px;">
 </div>
 
+<hr>
+
+<h3>Password Reset Activity</h3>
+
+<label>Select Period:</label>
+
+<select id="daysSelect">
+    <option value="7">Last 7 Days</option>
+    <option value="30" selected>Last 30 Days</option>
+    <option value="90">Last 90 Days</option>
+</select>
+
+<div id="passwordResetChart"
+     style="width:800px;height:500px;">
+</div>
+
 <script th:inline="javascript">
 
     let verified = [[${verifiedUsers}]];
@@ -45,6 +61,58 @@
     });
 
 </script>
+
+<script>
+
+function loadPasswordResetChart(days) {
+
+    fetch('/api/stats/password-resets?days=' + days)
+        .then(response => response.json())
+        .then(data => {
+
+            let dates = data.map(item => item.date);
+            let counts = data.map(item => item.count);
+
+            Highcharts.chart('passwordResetChart', {
+
+                chart: {
+                    type: 'line'
+                },
+
+                title: {
+                    text: 'Password Resets'
+                },
+
+                xAxis: {
+                    categories: dates
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Number of Resets'
+                    }
+                },
+
+                series: [{
+                    name: 'Password Resets',
+                    data: counts
+                }]
+            });
+
+        });
+}
+
+loadPasswordResetChart(30);
+
+document.getElementById('daysSelect')
+    .addEventListener('change', function() {
+
+        loadPasswordResetChart(this.value);
+
+    });
+
+</script>
+
 
 </body>
 </html>

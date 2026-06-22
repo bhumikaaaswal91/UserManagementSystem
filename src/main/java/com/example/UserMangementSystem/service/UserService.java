@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.example.UserMangementSystem.entity.PasswordResetLog;
+import com.example.UserMangementSystem.repository.PasswordResetLogRepository;
+
 @Service
 public class UserService {
 
@@ -20,6 +23,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PasswordResetLogRepository passwordResetLogRepository;
 
     // ── CRUD Operations ──────────────────────────────────────
 
@@ -87,7 +93,15 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
+        
         userRepository.save(user);
+
+        PasswordResetLog log = new PasswordResetLog();
+        log.setUserId(user.getId());
+        log.setResetTime(LocalDateTime.now());
+
+        passwordResetLogRepository.save(log);
+
         return true;
     }
 
@@ -101,6 +115,11 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        PasswordResetLog log = new PasswordResetLog();
+        log.setUserId(user.getId());
+        log.setResetTime(LocalDateTime.now());
+
+        passwordResetLogRepository.save(log);
         return true;
     }
 }
